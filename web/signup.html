@@ -42,7 +42,7 @@
                     <div class="am-form-group">
                         <input type="password" class="" id="is-doc-ipt-pwd" placeholder="确认一下密码呗">
                     </div>
-                    <p><button type="submit" class="am-btn am-btn-default">注册</button></p>
+                    <p><button type="submit" class="am-btn am-btn-default" onclick="issame()">注册</button></p>
                 </fieldset>
             </form>
         </div>
@@ -51,7 +51,14 @@
 
 <!--[if (gte IE 9)|!(IE)]><!-->
 <script src="js/jquery.min.js"></script>
+<script>
+function issame() {
+    var str=  document.getElementById("doc-ipt-email-1").innerHTML;
+      alert(str);
+}
 
+
+</script>
 <!--<![endif]-->
 <!--[if lte IE 8 ]>
 <script src="http://libs.baidu.com/jquery/1.11.3/jquery.min.js"></script>
