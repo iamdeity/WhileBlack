@@ -3,4 +3,26 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
+    <display-name></display-name>
+    <context-param>
+        <param-name>url</param-name>
+        <param-value>jdbc:mysql:///wuziqi</param-value>
+    </context-param>
+    <context-param>
+        <param-name>dbuser</param-name>
+        <param-value>root</param-value>
+    </context-param>
+    <context-param>
+        <param-name>dbpass</param-name>
+        <param-value>hzkjzyjsxy</param-value>
+    </context-param>
+
+    <servlet>
+        <servlet-name>SignupSevlet</servlet-name>
+        <servlet-class>cn.servlet.SignupSevlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SignupSevlet</servlet-name>
+        <url-pattern>/SignupSevlet</url-pattern>
+    </servlet-mapping>
 </web-app>
