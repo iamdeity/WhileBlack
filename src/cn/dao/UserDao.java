@@ -57,8 +57,8 @@ public class UserDao {
 
     }
 
-    //登录时，通过用户名找到这个对象，因为查询到的是一个对象，所有返回一个user
-    public User getUserByName(String uname){
+
+    public boolean getAllUser(String uname){ //判断用户名是否已存在
         User user = null;
 
         Connection conn = null;
@@ -78,8 +78,46 @@ public class UserDao {
 
             //如果查询到，就将结果集中的数据保存到用户中
             if(res.next()){
+               return true;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally{
+
+            try {
+                if(conn!=null&!conn.isClosed()){
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return false;
+    }
+
+    public User getpassword(String uname){  //判断密码是否正确
+        User user = null;
+
+        Connection conn = null;
+        PreparedStatement stat = null;
+        ResultSet res = null;
+
+        try {
+            String sql = "select * from member where username = ?";
+            conn = util.getConnection();
+            stat = conn.prepareStatement(sql);
+
+            stat.setString(1, uname);
+
+            //把查询到的数据放到结果集中
+            res = stat.executeQuery();//查询
+
+            //如果查询到，就将结果集中的数据保存到用户中
+            if(res.next()){
                 user = new User();
-                user.setId(res.getInt("id"));
+
 
                 user.setUsername(res.getString("username"));
                 user.setPass(res.getString("pass"));
