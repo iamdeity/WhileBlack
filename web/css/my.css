@@ -1,0 +1,21 @@
+.left {
+    width: 30%;
+    float: left
+}
+
+.right {
+    width: 70%;
+    float: right;
+}
+
+.center-block {
+    text-align: center;;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.element {
+. center-block();
+}
+

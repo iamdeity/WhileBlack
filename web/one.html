@@ -1,0 +1,128 @@
+<!doctype html>
+<html class="no-js" lang="">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <!-- Place favicon.ico in the root directory -->
+
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/main1.css">
+    <script src="js/vendor/modernizr-2.8.3.min.js"></script>
+</head>
+<body style="background-image: url('img/woodfloor.jpg')">
+<div  id="contain_in" style="background-image: url('img/b2.jpeg')">
+
+<canvas id="myCanvas" width="510px;" height="510px"  onclick="chessClick(event)">
+
+
+</canvas>
+</div>
+
+<script type="text/javascript">
+    var imgwhile=new Image();
+    imgwhile.src="img/keleyiw.png";
+    var imgblack=new Image();
+    imgblack.src="img/keleyib.png";
+    var chessData=[];
+    var isblack=true;
+    var canvas= document.getElementById("myCanvas")
+    var ctn = canvas.getContext('2d');
+    for (var i = 0; i <= 510; i += 34) {
+        //绘制横线
+        ctn.beginPath();
+        ctn.moveTo(0, i);
+        ctn.lineTo(510, i);
+        ctn.closePath();
+        ctn.stroke();
+        //绘制竖线
+        ctn.beginPath();
+        ctn.moveTo(i, 0);
+        ctn.lineTo(i, 510);
+        ctn.closePath();
+        ctn.stroke();
+    }
+    //初始化棋盘数组
+    for (var x = 0; x < 15; x++) {
+        chessData[x] = [];
+        for (var y = 0; y < 15; y++) {
+            chessData[x][y] = 0;
+        }
+
+    }
+    function chessClick(e) {
+       x= e.clientX;
+       y= e.clientY;
+       var solid=34;
+       var cleft= canvas.offsetLeft;
+       var ctop=canvas.offsetTop;
+        // alert(x+"  "+y+"  "+cleft+"  "+ctop);
+          x=x-cleft;
+          y=y-ctop;
+      //  alert()
+        //console.log(x+""+y);
+        x=Math.round(x/solid);//相对canvas的x坐标
+        y=Math.round(y/solid);
+        //alert(x+"  "+y);
+//        ctn.fillStyle="#fff000";
+//        ctn.beginPath();
+//        ctn.arc(x, y , solid/2, 0, Math.PI * 2, true);
+//        ctn.closePath();
+//        ctn.fill();
+
+       // ctn.drawImage(imgblack,x-17,y-17);
+        if (chessData[x][y]==1){
+              alert("您已经点过了");
+              return;
+        }
+        if (isblack){//判断是否该黑色的点
+
+            drawChess(1,x,y);//绘制黑棋
+
+        }else{
+            drawChess(2,x,y); //绘制黑棋
+        }
+    }
+      function  drawChess(chess,x,y) {
+
+        if (x > 0 && x < 15 && y > 0 && y < 15){
+
+            if (chess==1){
+               // alert(x+" "+y);
+                ctn.drawImage(imgblack,x*34-17,y*34-17);
+                chessData[x][y]=1;
+                count(chess, x, y);
+                isblack=false;
+
+            }else {
+                ctn.drawImage(imgwhile,x*34-17,y*34-17);
+                chessData[x][y]=2;
+                count(chess, x, y);
+                isblack=true;
+            }
+
+        }
+
+      }
+    function count(chess, x, y){  //计算胜负
+        var hz = 0;
+        var ve = 0;
+        var nw = 0;
+        var ne = 0;
+        //计算水平方向hz是否够五个
+        for(var i=x;i>0;i--){   //计算点击处左边的相同棋子的数量
+
+        }
+
+    }
+</script>
+
+</body>
+</html>

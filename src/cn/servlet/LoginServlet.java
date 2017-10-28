@@ -45,6 +45,7 @@ public class LoginServlet extends HttpServlet {
         if (isexit){  //判断用户名是否存在
             User getpassword = dao.getpassword(email);
             if (getpassword.getPass().equals(password)){
+                response.sendRedirect("/home.html");
                 out.print("登陆成功");
             }else{
                 response.sendRedirect("/index.html");

@@ -53,11 +53,12 @@ public class SignupSevlet extends HttpServlet {
         User user = new User(email, password);
        // System.out.println(dao.getAllUser(email));
         boolean isexit= dao.getAllUser(email);
-          if (isexit){  //判断用户名是否存在
+          if (isexit){  //判断用户名是否存在v bc
               out.print("<h1>用户名已存在，3秒后跳转至登录页面</h1>");
               response.setHeader("refresh", "3;url=/index.html");
           }else{
               dao.saveUser(user);
+              response.sendRedirect("/index.html");
           }
 
 
