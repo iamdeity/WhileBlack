@@ -112,12 +112,75 @@
 
       }
     function count(chess, x, y){  //计算胜负
+       // alert("执行了")
         var hz = 0;
         var ve = 0;
-        var nw = 0;
-        var ne = 0;
+        var ls = 0;
+        var rs = 0;
         //计算水平方向hz是否够五个
+
         for(var i=x;i>0;i--){   //计算点击处左边的相同棋子的数量
+
+             if(chessData[i][y]!=chess){//判断右边是否有其他的颜色棋子
+
+                 break;
+             }
+
+                 hz++;
+
+
+
+        }
+        for(var i=x+1;x<15;i++){
+            if(chessData[i][y]!=chess){
+                break;
+            }
+            hz++;
+        }
+        for(var i=y;i>0;i--){      // //计算上下方向的输赢
+            if (chessData[x][i]!=chess){
+                break;
+            }
+            ve++;
+        }
+        for(var i=y+1;i<15;i++){
+            if (chessData[x][i]!=chess){
+                break;
+            }
+            ve++;
+        }
+        for(var i=x,j=y;i>0,j>0;i--,j--){   //判断左上右下的棋子
+               if (chessData[i][j]!=chess){
+                      break;
+               }
+               ls++;
+        }
+        for(var i=x+1,j=y+1;i<15,j<15;i++,j++){
+            if (chessData[i][j]!=chess){
+                break;
+            }
+            ls++;
+        }
+
+        for(var i=x,j=y;i<15,j>0;i++,j--){
+            if (chessData[i][j]!=chess){
+                break;
+            }
+            rs++;
+        }
+        for(var i=x-1,j=y+1;i>0,j<15;i--,j++){
+            if (chessData[i][j ]!=chess){
+                break;
+            }
+            rs++;
+        }
+        if (hz>=5||ve>=5||ls>=5||rs>=5){
+            if (chess==1){
+                alert("黑棋胜,请刷新重玩")
+            }else{
+                alert("白棋胜，请刷新重玩")
+            }
+
 
         }
 
