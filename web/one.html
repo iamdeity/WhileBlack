@@ -63,6 +63,7 @@
 
 
 <script type="text/javascript">
+
     var imgwhile = new Image();
     imgwhile.src = "img/keleyiw.png";
     var imgblack = new Image();
@@ -108,14 +109,13 @@
     }
 
     function chessClick(e) {
-        x = e.clientX;
-        y = e.clientY;
+        x = e.offsetX
+        y = e.offsetY
+        //alert(x)
         var solid = 34;
-        var cleft = canvas.offsetLeft;
-        var ctop = canvas.offsetTop;
+
         // alert(x+"  "+y+"  "+cleft+"  "+ctop);
-        x = x - cleft;
-        y = y - ctop;
+
         //  alert()
         //console.log(x+""+y);
         x = Math.round(x / solid);//相对canvas的x坐标
@@ -140,7 +140,7 @@
             drawChess(1, x, y);//绘制黑棋
 
         } else {
-            drawChess(2, x, y); //绘制黑棋
+            drawChess(2, x, y); //绘制白棋
         }
     }
 
@@ -150,16 +150,20 @@
 
             if (chess == 1) {
                 // alert(x+" "+y);
+                isblack = false;
                 ctnbw.drawImage(imgblack, x * 34 - 17, y * 34 - 17);
                 chessData[x][y] = 1;
                 count(chess, x, y);
-                isblack = false;
 
-            } else {
+
+            }
+
+            if(chess==2){
+                isblack = true;
                 ctnbw.drawImage(imgwhile, x * 34 - 17, y * 34 - 17);
                 chessData[x][y] = 2;
                 count(chess, x, y);
-                isblack = true;
+
             }
 
         }
