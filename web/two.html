@@ -1,0 +1,65 @@
+<!doctype html>
+<html class="no-js" lang="">
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>五子棋</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- 可选的 Bootstrap 主题文件（一般不用引入） -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <!-- Place favicon.ico in the root directory -->
+
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/main1.css">
+    <script src="js/danji.js"></script>
+    <script src="js/vendor/modernizr-2.8.3.min.js"></script>
+</head>
+
+<!--<body style="background-image: url('img/woodfloor.jpg') ; text-align: center;">-->
+<body style="background-color: #f0f0f0 ; text-align: center;">
+
+<div id="contain_in" style="background-image: url('img/b2.jpeg'); ">
+    <div  style="width: 75%;height: 100%; float: left; display: block; text-align: center;background-color: #f0ad4e">
+        <canvas id="myCanvas" width="510px;" height="510px" ;  onclick="chessClick(event)">
+
+
+        </canvas>
+    </div>
+    <div style="width: 25%; height: 100%; display: block; float: left;text-align: center; background-color: #0a628f">
+        <p>
+            <a href="home.html"> <button type="button" class="btn btn-primary btn-lg" style=" margin-top: 100px;" >返回</button></a>
+
+        </p>
+        <p>
+            <button type="button" class="btn btn-primary btn-lg" onclick="undo()" style=" margin-top: 100px;">悔棋</button>
+
+
+        </p>
+        <p>
+            <a href="one.html"><button type="button" class="btn btn-primary btn-lg"  style=" margin-top: 100px;">重新开始</button></a>
+
+
+        </p>
+
+    </div>
+
+</div>
+
+</body>
+</html>
