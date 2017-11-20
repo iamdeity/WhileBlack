@@ -61,6 +61,11 @@
 
 </div>
    <script>
+       var a1;
+       var b1;
+       var a2;
+       var b2;
+
        var me=true;
        var imgwhile = new Image();
        imgwhile.src = "img/keleyiw.png";
@@ -160,10 +165,13 @@
        var drawChess=function(i,j,me){
 
            if(me){
-
+                 a1=i;
+                 b1=j;
               ctn.drawImage(imgblack, i *solid - solid/2, j * solid - solid/2);
 
            }else{
+               a2=i;
+               b2=j;
                ctn.drawImage(imgwhile,  i *solid - solid/2, j * solid - solid/2);
 
            }
@@ -197,6 +205,7 @@
                for(var k=0; k<count; k++){
                    if (wins[i][j][k]) {
                        myWin[k]++;
+
                        computerWin[k] = 6;
                        if (myWin[k] == 5) {
                            window.alert("你赢了!");
@@ -297,6 +306,47 @@
            }
            if(!over){
                me=!me;
+           }
+       }
+
+       function undo() {
+           ctn.clearRect(a1*solid-solid/2,b1*solid-solid/2,34,34);
+           //绘制横线
+           ctn.beginPath();
+           ctn.moveTo(a1*solid-solid/2, b1*solid);
+           ctn.lineTo(a1*solid+solid/2, b1*solid);
+           ctn.closePath();
+           ctn.stroke();
+           //绘制竖线
+           ctn.beginPath();
+           ctn.moveTo(a1*solid,  b1*solid-solid/2);
+           ctn.lineTo(a1*solid,  b1*solid+solid/2);
+           ctn.closePath();
+           ctn.stroke();
+           if (a1==3&&b1==3||a1==12&&b1==3||a1==7&&b1==7||a1==3&&b1==12||a1==12&&b1==12){
+               ctn.fillStyle = "#000";//填充canvas的背景颜色
+               ctn.fillRect(a1*solid-6, b1*solid-6, 12, 12);//参数分别表示 x轴,y轴,宽度,高度
+               ctn.lineWidth = 1;//边框宽度
+           }
+
+
+           ctn.clearRect(a2*solid-solid/2,b2*solid-solid/2,34,34);
+           //绘制横线
+           ctn.beginPath();
+           ctn.moveTo(a2*solid-solid/2, b2*solid);
+           ctn.lineTo(a2*solid+solid/2, b2*solid);
+           ctn.closePath();
+           ctn.stroke();
+           //绘制竖线
+           ctn.beginPath();
+           ctn.moveTo(a2*solid,  b2*solid-solid/2);
+           ctn.lineTo(a2*solid,  b2*solid+solid/2);
+           ctn.closePath();
+           ctn.stroke();
+           if (x==3&&y==3||x==12&&y==3||x==7&&y==7||x==3&&y==12||x==12&&y==12){
+               ctn.fillStyle = "#000";//填充canvas的背景颜色
+               ctn.fillRect(a2*solid-6, b2*solid-6, 12, 12);//参数分别表示 x轴,y轴,宽度,高度
+               ctn.lineWidth = 1;//边框宽度
            }
        }
    </script>
