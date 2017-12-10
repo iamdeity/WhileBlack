@@ -1,22 +1,85 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html class="no-js" lang="">
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+
 <head>
     <meta charset="utf-8">
-    <title>666</title>
-</head>
-<body>
-name<input id="name" type="text"/><br>
-Welcome<br/><input id="text" type="text"/>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>五子棋</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
-<button onclick="send()">发送消息</button>
-<hr/>
-<button onclick="closeWebSocket()">关闭WebSocket连接</button>
-<hr/>
-<div id="message"></div>
-</body>
+    <!-- 可选的 Bootstrap 主题文件（一般不用引入） -->
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <!-- Place favicon.ico in the root directory -->
+
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="../../../Desktop/WhileBlack/web/css/main.css">
+    <link rel="stylesheet" href="../../../Desktop/WhileBlack/web/css/main1.css">
+    <script src="../../../Desktop/WhileBlack/web/js/danji.js"></script>
+    <script src="../../../Desktop/WhileBlack/web/js/vendor/modernizr-2.8.3.min.js"></script>
+</head>
+
+<body style="background-color: #f0f0f0 ; text-align: center;">
+
+<div id="contain_in" style="background-image: url('../../../Desktop/WhileBlack/web/img/b2.jpeg'); ">
+    <div style="width: 75%;height: 100%; float: left; display: block; text-align: center;background-color: #f0ad4e">
+        <canvas id="myCanvas" width="510px;" height="510px" ; onclick="chessClick(event)">
+
+
+        </canvas>
+    </div>
+    <div style="width: 25%; height: 100%; display: block; float: left;text-align: center; background-color: #0a628f">
+        <p>
+            <a href="../../../Desktop/WhileBlack/web/home.html">
+                <button type="button" class="btn btn-primary btn-lg" style=" margin-top: 100px;">返回</button>
+            </a>
+
+        </p>
+        <p>
+            <button type="button" class="btn btn-primary btn-lg" onclick="undo()" style=" margin-top: 100px;">悔棋
+            </button>
+
+
+        </p>
+        <p>
+            <a href="Three.html">
+                <button type="button" class="btn btn-primary btn-lg" style=" margin-top: 100px;">重新开始</button>
+            </a>
+
+
+        </p>
+
+    </div>
+
+</div>
+
 
 <script type="text/javascript">
     var websocket = null;
+    var isclick = true;
+    var imgwhile = new Image();
+    imgwhile.src = "img/keleyiw.png";
+    var imgblack = new Image();
+    imgblack.src = "img/keleyib.png";
+    var chessData = [];
+    var isblack = true;
+    var canvas = document.getElementById("myCanvas")
+    var canvass = document.getElementById("myCanvas")
+    var ctn = canvas.getContext('2d');
+    var ctnbw = canvass.getContext('2d');
+    var solid = 34;
     //判断当前浏览器是否支持WebSocket
     if ('WebSocket' in window) {
         websocket = new WebSocket("ws://localhost:8080/websocket");
@@ -37,7 +100,13 @@ Welcome<br/><input id="text" type="text"/>
 
     //接收到消息的回调方法
     websocket.onmessage = function (event) {
-        setMessageInnerHTML(event.data);
+        isclick = true;
+        var getstring = event.data;
+        arr = getstring.split(",");
+        clic(arr[0], arr[1])
+
+
+        // setMessageInnerHTML(event.data);
     }
 
     //连接关闭的回调方法
@@ -50,10 +119,10 @@ Welcome<br/><input id="text" type="text"/>
         closeWebSocket();
     }
 
-    //将消息显示在网页上
-    function setMessageInnerHTML(innerHTML) {
-        document.getElementById('message').innerHTML += innerHTML + '<br/>';
-    }
+    //    //将消息显示在网页上
+    //    function setMessageInnerHTML(innerHTML) {
+    //        //  document.getElementById('message').innerHTML += innerHTML + '<br/>';
+    //    }
 
     //关闭WebSocket连接
     function closeWebSocket() {
@@ -67,6 +136,267 @@ Welcome<br/><input id="text" type="text"/>
         websocket.send(message);
     }
 
+
+    for (var i = 0; i <= 510; i += 34) {
+        //绘制横线
+        ctn.beginPath();
+        ctn.moveTo(0, i);
+        ctn.lineTo(510, i);
+        ctn.closePath();
+        ctn.stroke();
+        //绘制竖线
+        ctn.beginPath();
+        ctn.moveTo(i, 0);
+        ctn.lineTo(i, 510);
+        ctn.closePath();
+        ctn.stroke();
+    }
+
+    ctn.fillStyle = "#000";//填充canvas的背景颜色
+    ctn.fillRect(3 * solid - 6, 3 * solid - 6, 12, 12);//参数分别表示 x轴,y轴,宽度,高度
+    ctn.fillRect(12 * solid - 6, 3 * solid - 6, 12, 12);
+    ctn.fillRect(7 * solid - 6, 7 * solid - 6, 12, 12);
+    ctn.fillRect(3 * solid - 6, 12 * solid - 6, 12, 12);
+    ctn.fillRect(12 * solid - 6, 12 * solid - 6, 12, 12);
+    ctn.lineWidth = 1;//边框宽度
+
+    //初始化棋盘数组
+    for (var x = 0; x < 15; x++) {
+        chessData[x] = [];
+        for (var y = 0; y < 15; y++) {
+            chessData[x][y] = 0;
+        }
+
+    }
+
+    function chessClick(e) {
+        x = e.offsetX
+        y = e.offsetY
+        x = Math.round(x / solid);//相对canvas的x坐标
+        y = Math.round(y / solid);
+        var m = x + "," + y;
+        websocket.send(m);
+        clic(x, y);
+
+    }
+
+    function clic(x, y) {
+
+
+        //alert(x)
+
+
+        // alert(x+"  "+y+"  "+cleft+"  "+ctop);
+
+        //  alert()
+        //console.log(x+""+y);
+
+        //alert(x+"  "+y);
+
+
+//        ctn.fillStyle="#fff000";
+//        ctn.beginPath();
+//        ctn.arc(x, y , solid/2, 0, Math.PI * 2, true);
+//        ctn.closePath();
+//        ctn.fill();
+
+        // ctn.drawImage(imgblack,x-17,y-17);
+        if (chessData[x][y] == 1 || chessData[x][y] == 2 || !isclick) {
+
+            return;
+        }
+        isclick = false;
+        if (isblack) {//判断是否该黑色的点
+
+            drawChess(1, x, y);//绘制黑棋
+
+        } else {
+            drawChess(2, x, y); //绘制白棋
+        }
+    }
+
+    function drawChess(chess, x, y) {
+
+        if (x > 0 && x < 15 && y > 0 && y < 15) {
+
+            if (chess == 1) {
+                // alert(x+" "+y);
+                isblack = false;
+                ctnbw.drawImage(imgblack, x * 34 - 17, y * 34 - 17);
+                chessData[x][y] = 1;
+
+                count(chess, x, y);
+
+
+            }
+
+            if (chess == 2) {
+                isblack = true;
+                ctnbw.drawImage(imgwhile, x * 34 - 17, y * 34 - 17);
+                chessData[x][y] = 2;
+                count(chess, x, y);
+
+            }
+
+        }
+
+    }
+
+    function count(chess, x, y) {  //计算胜负
+
+
+
+        var hz = 0;
+        var ve = 0;
+        var ls = 0;
+        var rs = 0;
+        //计算水平方向hz是否够五个
+
+        for (var i = x; i > 0; i--) {   //计算点击处左边的相同棋子的数量
+
+            if (chessData[i][y] != chess) {//判断右边是否有其他的颜色棋子
+
+                break;
+            }
+
+            hz++;
+
+
+        }
+        for (var i = x + 1; x < 15; i++) {
+            if (chessData[i][y] != chess) {
+                break;
+            }
+            hz++;
+        }
+        for (var i = y; i > 0; i--) {      // //计算上下方向的输赢
+            if (chessData[x][i] != chess) {
+                break;
+            }
+            ve++;
+        }
+        for (var i = y + 1; i < 15; i++) {
+            if (chessData[x][i] != chess) {
+                break;
+            }
+            ve++;
+        }
+        for (var i = x, j = y; i > 0, j > 0; i--, j--) {   //判断左上右下的棋子
+            if (chessData[i][j] != chess) {
+                break;
+            }
+            ls++;
+        }
+        for (var i = x + 1, j = y + 1; i < 15, j < 15; i++, j++) {
+            if (chessData[i][j] != chess) {
+                break;
+            }
+            ls++;
+        }
+
+        for (var i = x, j = y; i < 15, j > 0; i++, j--) {
+            if (chessData[i][j] != chess) {
+                break;
+            }
+            rs++;
+        }
+        for (var i = x - 1, j = y + 1; i > 0, j < 15; i--, j++) {
+            if (chessData[i][j] != chess) {
+                break;
+            }
+            rs++;
+        }
+      // alert("左右"+hz+"上下"+ve)
+        if (hz >= 5 || ve >= 5 || ls >= 5 || rs >= 5) {
+            if (chess == 1) {
+                firm(1);
+                //alert("黑棋胜,请刷新重玩")
+            } else {
+                firm(2);
+            }
+
+
+        }
+
+    }
+
+    function firm(chess) {
+
+        if (chess == 1) {
+            if (confirm("黑棋胜，是否刷新重玩")) {
+
+                location.reload();
+
+            }
+
+            else {
+
+                canvas.onclick = function () {
+                    canvas.disabled = 'disabled';
+                };
+
+            }
+        } else {
+
+            if (confirm("白棋胜，是否刷新重玩")) {
+
+                location.reload();
+
+            }
+
+            else {
+
+                canvas.onclick = function () {
+                    canvas.disabled = 'disabled';
+                };
+
+            }
+
+
+        }
+
+
+    }
+    function undo() {
+
+        ctn.clearRect(x * solid - solid / 2, y * solid - solid / 2, 34, 34);
+        //绘制横线
+        ctn.beginPath();
+        ctn.moveTo(x * solid - solid / 2, y * solid);
+        ctn.lineTo(x * solid + solid / 2, y * solid);
+        ctn.closePath();
+        ctn.stroke();
+        //绘制竖线
+        ctn.beginPath();
+        ctn.moveTo(x * solid, y * solid - solid / 2);
+        ctn.lineTo(x * solid, y * solid + solid / 2);
+        ctn.closePath();
+        ctn.stroke();
+        if (x == 3 && y == 3 || x == 12 && y == 3 || x == 7 && y == 7 || x == 3 && y == 12 || x == 12 && y == 12) {
+            ctn.fillStyle = "#000";//填充canvas的背景颜色
+            ctn.fillRect(x * solid - 6, y * solid - 6, 12, 12);//参数分别表示 x轴,y轴,宽度,高度
+            ctn.lineWidth = 1;//边框宽度
+        }
+        chessData[x][y] = 0;
+        if (isblack) {
+            isblack = false;
+        } else {
+            isblack = true;
+        }
+
+    }
+
+
 </script>
+
+
+<!--<button onclick="send()">发送消息</button>-->
+<!--<hr/>-->
+<!--<button onclick="closeWebSocket()">关闭WebSocket连接</button>-->
+<!--<hr/>-->
+<!--<div id="message"></div>-->
+</body>
+
+=
 
 </html>
