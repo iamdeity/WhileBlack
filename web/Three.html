@@ -25,15 +25,16 @@
     <!-- Place favicon.ico in the root directory -->
 
     <link rel="stylesheet" href="css/normalize.css">
-    <link rel="stylesheet" href="../../../Desktop/WhileBlack/web/css/main.css">
-    <link rel="stylesheet" href="../../../Desktop/WhileBlack/web/css/main1.css">
-    <script src="../../../Desktop/WhileBlack/web/js/danji.js"></script>
-    <script src="../../../Desktop/WhileBlack/web/js/vendor/modernizr-2.8.3.min.js"></script>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/main1.css">
+    <script src="js/danji.js"></script>
+    <script src="js/vendor/modernizr-2.8.3.min.js"></script>
 </head>
 
+<!--<body style="background-image: url('img/woodfloor.jpg') ; text-align: center;">-->
 <body style="background-color: #f0f0f0 ; text-align: center;">
 
-<div id="contain_in" style="background-image: url('../../../Desktop/WhileBlack/web/img/b2.jpeg'); ">
+<div id="contain_in" style="">
     <div style="width: 75%;height: 100%; float: left; display: block; text-align: center;background-color: #f0ad4e">
         <canvas id="myCanvas" width="510px;" height="510px" ; onclick="chessClick(event)">
 
@@ -62,11 +63,34 @@
         </p>
 
     </div>
+<div>
+    <textarea id="content" name="content" rows="10" cols="75"
+              onpropertychange="if(this.scrollHeight>80) this.style.posHeight=this.scrollHeight+5"  readonly="readonly" style="width: 50%;height: 100%; display: block;float: left"></textarea>
+    <div style="width: 50%;height: 100%;display: block;float: right">
+        请输入聊天内容：<br>
+        <input type="text" id="firstname" name="firstname"  style="width: 100%; height: 50%">
+    <button type="button" class="btn btn-primary btn-lg btn-block" onclick="sendmessage()">发送</button>
+    </div>
+</div>
+
 
 </div>
 
 
 <script type="text/javascript">
+    window.onload=function(){
+        document.onkeydown=function(){
+            var e=window.event||arguments[0];
+            if(e.keyCode==123){
+                return false;
+            }else if((e.ctrlKey)&&(e.shiftKey)&&(e.keyCode==73)){  //禁止审查元素
+                return false;
+            }
+        };
+        document.oncontextmenu=function(){
+            return false;
+        }
+    }
     var websocket = null;
     var isclick = true;
     var imgwhile = new Image();
@@ -100,10 +124,24 @@
 
     //接收到消息的回调方法
     websocket.onmessage = function (event) {
-        isclick = true;
         var getstring = event.data;
-        arr = getstring.split(",");
-        clic(arr[0], arr[1])
+        var fdStart = getstring.indexOf("&");
+        if(fdStart == 0){
+           // 表示strCode是以ssss开头；
+           // alert(getstring)
+            getstring=getstring.substr(1);
+
+            document.getElementById("content").innerHTML+="对方："+getstring+"\n";
+            var obj = document.getElementById("content");
+            obj.scrollTop = obj.scrollHeight; // good
+        }else if(fdStart == -1){
+           // 表示strCode不是以ssss开头
+            isclick = true;
+
+            arr = getstring.split(",");
+            clic(arr[0], arr[1]);
+
+        }
 
 
         // setMessageInnerHTML(event.data);
@@ -132,7 +170,7 @@
     //发送消息
     function send() {
 
-        var message = document.getElementById('text').value;
+        //var message = document.getElementById('text').value;
         websocket.send(message);
     }
 
@@ -170,13 +208,19 @@
     }
 
     function chessClick(e) {
-        x = e.offsetX
-        y = e.offsetY
-        x = Math.round(x / solid);//相对canvas的x坐标
-        y = Math.round(y / solid);
-        var m = x + "," + y;
-        websocket.send(m);
-        clic(x, y);
+        if(isclick){
+            x = e.offsetX
+            y = e.offsetY
+            x = Math.round(x / solid);//相对canvas的x坐标
+            y = Math.round(y / solid);
+            var m = x + "," + y;
+            if (x>0&&x<15&&y>0&&y<15){
+                isclick=false;
+            }
+            websocket.send(m);
+            clic(x, y);
+        }
+
 
     }
 
@@ -201,11 +245,11 @@
 //        ctn.fill();
 
         // ctn.drawImage(imgblack,x-17,y-17);
-        if (chessData[x][y] == 1 || chessData[x][y] == 2 || !isclick) {
+        if (chessData[x][y] == 1 || chessData[x][y] == 2 ) {
 
             return;
         }
-        isclick = false;
+
         if (isblack) {//判断是否该黑色的点
 
             drawChess(1, x, y);//绘制黑棋
@@ -240,6 +284,7 @@
 
         }
 
+
     }
 
     function count(chess, x, y) {  //计算胜负
@@ -263,12 +308,14 @@
 
 
         }
+
         for (var i = x + 1; x < 15; i++) {
             if (chessData[i][y] != chess) {
                 break;
             }
             hz++;
         }
+
         for (var i = y; i > 0; i--) {      // //计算上下方向的输赢
             if (chessData[x][i] != chess) {
                 break;
@@ -357,34 +404,48 @@
 
 
     }
-    function undo() {
+    function sendmessage(){
+        var txt = document.getElementById("firstname").value;
+        document.getElementById("firstname").innerHTML="";
+        document.getElementById("content").innerHTML +="我："+txt+"\n";
+        websocket.send("&"+txt);
 
-        ctn.clearRect(x * solid - solid / 2, y * solid - solid / 2, 34, 34);
-        //绘制横线
-        ctn.beginPath();
-        ctn.moveTo(x * solid - solid / 2, y * solid);
-        ctn.lineTo(x * solid + solid / 2, y * solid);
-        ctn.closePath();
-        ctn.stroke();
-        //绘制竖线
-        ctn.beginPath();
-        ctn.moveTo(x * solid, y * solid - solid / 2);
-        ctn.lineTo(x * solid, y * solid + solid / 2);
-        ctn.closePath();
-        ctn.stroke();
-        if (x == 3 && y == 3 || x == 12 && y == 3 || x == 7 && y == 7 || x == 3 && y == 12 || x == 12 && y == 12) {
-            ctn.fillStyle = "#000";//填充canvas的背景颜色
-            ctn.fillRect(x * solid - 6, y * solid - 6, 12, 12);//参数分别表示 x轴,y轴,宽度,高度
-            ctn.lineWidth = 1;//边框宽度
-        }
-        chessData[x][y] = 0;
-        if (isblack) {
-            isblack = false;
-        } else {
-            isblack = true;
-        }
+      //  document.getElementById("content").innerHTML+=txt+"\n";
+
+        var obj = document.getElementById("content");
+        obj.scrollTop = obj.scrollHeight; // good
+
 
     }
+//    function undo() {
+//
+//        ctn.clearRect(x * solid - solid / 2, y * solid - solid / 2, 34, 34);
+//
+//        //绘制横线
+//        ctn.beginPath();
+//        ctn.moveTo(x * solid - solid / 2, y * solid);
+//        ctn.lineTo(x * solid + solid / 2, y * solid);
+//        ctn.closePath();
+//        ctn.stroke();
+//        //绘制竖线
+//        ctn.beginPath();
+//        ctn.moveTo(x * solid, y * solid - solid / 2);
+//        ctn.lineTo(x * solid, y * solid + solid / 2);
+//        ctn.closePath();
+//        ctn.stroke();
+//        if (x == 3 && y == 3 || x == 12 && y == 3 || x == 7 && y == 7 || x == 3 && y == 12 || x == 12 && y == 12) {
+//            ctn.fillStyle = "#000";//填充canvas的背景颜色
+//            ctn.fillRect(x * solid - 6, y * solid - 6, 12, 12);//参数分别表示 x轴,y轴,宽度,高度
+//            ctn.lineWidth = 1;//边框宽度
+//        }
+//        chessData[x][y] = 0;
+//        if (isblack) {
+//            isblack = false;
+//        } else {
+//            isblack = true;
+//        }
+//
+//    }
 
 
 </script>
