@@ -32,7 +32,7 @@
 </head>
 
 <!--<body style="background-image: url('img/woodfloor.jpg') ; text-align: center;">-->
-<body style="background-color: #f0f0f0 ; text-align: center;">
+<body onkeydown="sendmessage()" style="background-color: #f0f0f0 ; text-align: center;">
 
 <div id="contain_in" style="">
     <div style="width: 75%;height: 100%; float: left; display: block; text-align: center;background-color: #f0ad4e">
@@ -44,7 +44,7 @@
     <div style="width: 25%; height: 100%; display: block; float: left;text-align: center; background-color: #0a628f">
         <p>
             <a href="../../../Desktop/WhileBlack/web/home.html">
-                <button type="button" class="btn btn-primary btn-lg" style=" margin-top: 100px;">返回</button>
+                <button type="button" class="btn btn-primary btn-lg" style=" margin-top: 100px;">退出</button>
             </a>
 
         </p>
@@ -55,9 +55,9 @@
 
         </p>
         <p>
-            <a href="Three.html">
-                <button type="button" class="btn btn-primary btn-lg" style=" margin-top: 100px;">重新开始</button>
-            </a>
+
+                <button type="button" class="btn btn-primary btn-lg"  onclick="restar()" style=" margin-top: 100px;">重新开始</button>
+
 
 
         </p>
@@ -70,6 +70,7 @@
         请输入聊天内容：<br>
         <input type="text" id="firstname" name="firstname"  style="width: 100%; height: 50%">
     <button type="button" class="btn btn-primary btn-lg btn-block" onclick="sendmessage()">发送</button>
+        <button type="button" class="btn btn-primary btn-lg btn-block" onclick="">举报</button>
     </div>
 </div>
 
@@ -77,7 +78,9 @@
 </div>
 
 
+
 <script type="text/javascript">
+
     window.onload=function(){
         document.onkeydown=function(){
             var e=window.event||arguments[0];
@@ -91,6 +94,10 @@
             return false;
         }
     }
+    var a1;
+    var b1;
+    var a2;
+    var b2;
     var websocket = null;
     var isclick = true;
     var imgwhile = new Image();
@@ -125,25 +132,80 @@
     //接收到消息的回调方法
     websocket.onmessage = function (event) {
         var getstring = event.data;
+        // alert(getstring)
         var fdStart = getstring.indexOf("&");
-        if(fdStart == 0){
-           // 表示strCode是以ssss开头；
-           // alert(getstring)
-            getstring=getstring.substr(1);
+        var fdStart2 = getstring.indexOf("!");
+        var fdStart3 = getstring.indexOf("w");
+        var fdStart4 = getstring.indexOf("b");
+        if (fdStart3==0){
+            getstring = getstring.substr(1);
 
-            document.getElementById("content").innerHTML+="对方："+getstring+"\n";
-            var obj = document.getElementById("content");
-            obj.scrollTop = obj.scrollHeight; // good
-        }else if(fdStart == -1){
-           // 表示strCode不是以ssss开头
-            isclick = true;
+           var arr1 = getstring.split(",");
 
-            arr = getstring.split(",");
-            clic(arr[0], arr[1]);
 
+            drawChess(2, arr1[0], arr1[1]);//绘制白棋
+        }
+        if (fdStart4==0) {
+            getstring = getstring.substr(1);
+
+            var arr2 = getstring.split(",");
+
+
+            drawChess(1, arr2[0], arr2[1]);//绘制黑棋
         }
 
+        if (fdStart2 == 0) {
+            getstring = getstring.substr(1);
+            isclick = true;
+            arr = getstring.split(",");
+            a2=arr[0];
+            b2=arr[1];
+            clic(arr[0], arr[1]);
+        }
+        if (fdStart == 0) {
+            // 表示strCode是以ssss开头；
+            // alert(getstring)
+            getstring = getstring.substr(1);
 
+            document.getElementById("content").innerHTML += "对方：" + getstring + "\n";
+            var obj = document.getElementById("content");
+            obj.scrollTop = obj.scrollHeight; // good
+        }
+
+        if (getstring == "@0") {   //判断是否是悔棋的请求
+            if (confirm("对手请求悔棋,是否同意")) {
+
+                websocket.send("@1");
+                agreeundo();
+                websocket.send("#"+a1 + "," + b1);
+                websocket.send("#"+a2 + "," + b2);
+
+
+
+            }
+
+            else {
+
+                websocket.send("@2");
+
+            }
+
+
+        }
+        if(getstring=="@1"){
+           // alert("对方已同意")
+            agreeundo();
+
+        }
+         if(getstring=="@2"){
+            alert("对方拒绝悔棋")
+         }
+      if (getstring=="@3"){
+             alert("黑子胜，你败了")
+      }
+      if (getstring=="@4"){
+          alert("白子胜，你败了")
+      }
         // setMessageInnerHTML(event.data);
     }
 
@@ -213,12 +275,21 @@
             y = e.offsetY
             x = Math.round(x / solid);//相对canvas的x坐标
             y = Math.round(y / solid);
-            var m = x + "," + y;
-            if (x>0&&x<15&&y>0&&y<15){
-                isclick=false;
+            var m ="!"+ x + "," + y;
+
+            if(chessData[x][y]==0){
+                if (x>0&&x<15&&y>0&&y<15){
+                    isclick=false;
+                }
+                a1=x;
+                b1=y;
+                websocket.send(m);
+                clic(x, y);
             }
-            websocket.send(m);
-            clic(x, y);
+
+
+
+
         }
 
 
@@ -262,6 +333,7 @@
     function drawChess(chess, x, y) {
 
         if (x > 0 && x < 15 && y > 0 && y < 15) {
+
 
             if (chess == 1) {
                 // alert(x+" "+y);
@@ -355,10 +427,13 @@
         }
       // alert("左右"+hz+"上下"+ve)
         if (hz >= 5 || ve >= 5 || ls >= 5 || rs >= 5) {
+            websocket.send("b"+"."+x+"."+y);
             if (chess == 1) {
                 firm(1);
+
                 //alert("黑棋胜,请刷新重玩")
             } else {
+                websocket.send("w"+"."+x+"."+y);
                 firm(2);
             }
 
@@ -405,10 +480,13 @@
 
     }
     function sendmessage(){
-        var txt = document.getElementById("firstname").value;
-        document.getElementById("firstname").innerHTML="";
-        document.getElementById("content").innerHTML +="我："+txt+"\n";
-        websocket.send("&"+txt);
+        if(event.keyCode==13){
+            var txt = document.getElementById("firstname").value;
+            document.getElementById("firstname").value="";
+            document.getElementById("content").innerHTML +="我："+txt+"\n";
+            websocket.send("&"+txt);
+        }
+
 
       //  document.getElementById("content").innerHTML+=txt+"\n";
 
@@ -416,38 +494,63 @@
         obj.scrollTop = obj.scrollHeight; // good
 
 
+
+
     }
-//    function undo() {
-//
-//        ctn.clearRect(x * solid - solid / 2, y * solid - solid / 2, 34, 34);
-//
-//        //绘制横线
-//        ctn.beginPath();
-//        ctn.moveTo(x * solid - solid / 2, y * solid);
-//        ctn.lineTo(x * solid + solid / 2, y * solid);
-//        ctn.closePath();
-//        ctn.stroke();
-//        //绘制竖线
-//        ctn.beginPath();
-//        ctn.moveTo(x * solid, y * solid - solid / 2);
-//        ctn.lineTo(x * solid, y * solid + solid / 2);
-//        ctn.closePath();
-//        ctn.stroke();
-//        if (x == 3 && y == 3 || x == 12 && y == 3 || x == 7 && y == 7 || x == 3 && y == 12 || x == 12 && y == 12) {
-//            ctn.fillStyle = "#000";//填充canvas的背景颜色
-//            ctn.fillRect(x * solid - 6, y * solid - 6, 12, 12);//参数分别表示 x轴,y轴,宽度,高度
-//            ctn.lineWidth = 1;//边框宽度
-//        }
-//        chessData[x][y] = 0;
-//        if (isblack) {
-//            isblack = false;
-//        } else {
-//            isblack = true;
-//        }
-//
-//    }
+    function undo() {
+
+         websocket.send("@0");
+
+   }
+   function  agreeundo() { //同意悔棋
+       chessData[a1][b1]=0;
+       chessData[a2][b2]=0;
+       ctn.clearRect(a1*solid-solid/2,b1*solid-solid/2,34,34);
+       //绘制横线
+       ctn.beginPath();
+       ctn.moveTo(a1*solid-solid/2, b1*solid);
+       ctn.lineTo(a1*solid+solid/2, b1*solid);
+       ctn.closePath();
+       ctn.stroke();
+
+       ctn.clearRect(a2*solid-solid/2,b2*solid-solid/2,34,34);
+       //绘制横线
+       ctn.beginPath();
+       ctn.moveTo(a2*solid-solid/2, b2*solid);
+       ctn.lineTo(a2*solid+solid/2, b2*solid);
+       ctn.closePath();
+       ctn.stroke();
+
+       //绘制竖线
+       ctn.beginPath();
+       ctn.moveTo(a1*solid,  b1*solid-solid/2);
+       ctn.lineTo(a1*solid,  b1*solid+solid/2);
+       ctn.closePath();
+       ctn.stroke();
+       if (a1==3&&b1==3||a1==12&&b1==3||a1==7&&b1==7||a1==3&&b1==12||a1==12&&b1==12){
+           ctn.fillStyle = "#000";//填充canvas的背景颜色
+           ctn.fillRect(a1*solid-6, b1*solid-6, 12, 12);//参数分别表示 x轴,y轴,宽度,高度
+           ctn.lineWidth = 1;//边框宽度
+       }
 
 
+
+       //绘制竖线
+       ctn.beginPath();
+       ctn.moveTo(a2*solid,  b2*solid-solid/2);
+       ctn.lineTo(a2*solid,  b2*solid+solid/2);
+       ctn.closePath();
+       ctn.stroke();
+       if (x==3&&y==3||x==12&&y==3||x==7&&y==7||x==3&&y==12||x==12&&y==12){
+           ctn.fillStyle = "#000";//填充canvas的背景颜色
+           ctn.fillRect(a2*solid-6, b2*solid-6, 12, 12);//参数分别表示 x轴,y轴,宽度,高度
+           ctn.lineWidth = 1;//边框宽度
+       }
+   }
+
+    function   restar(){
+        websocket.send("@6");
+    }
 </script>
 
 
