@@ -138,4 +138,39 @@ public class UserDao {
 
         return user;
     }
+    public void updatepassword(User user){
+        System.out.println("执行了");
+
+        Connection conn = null;
+
+        PreparedStatement stat = null;
+
+        try {
+        String  sql  ="update member set pass=? where username=?";
+             conn = util.getConnection();
+            stat = (PreparedStatement) conn.prepareStatement(sql);
+
+            stat.setString(1, user.getPass());
+            stat.setString(2, user.getUsername());
+
+            int count = stat.executeUpdate();
+            System.out.println(count+"条数据发生变化");
+            stat.close();
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally{
+
+            try {
+                if(conn!=null&!conn.isClosed()){
+                    conn.close();
+                }
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+    }
 }

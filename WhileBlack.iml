@@ -33,5 +33,6 @@
     <orderEntry type="library" name="servlet-api" level="project" />
     <orderEntry type="library" name="websocket-api" level="project" />
     <orderEntry type="library" name="jedis-2.9.0" level="project" />
+    <orderEntry type="library" name="javax.mail" level="project" />
   </component>
 </module>

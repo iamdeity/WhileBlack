@@ -51,11 +51,17 @@ public class Win {
     }
 public String cal(String message) {
 
+
         boolean isblack=false;
     if(message.substring(0,1).equals("b")){
 
-       isblack=true;
+       //isblack=true;
     }
+    if (jedis.exists("#"+sessionid)){
+        isblack=true;
+
+    }
+
     String[] strs=message.split("\\.");
     System.out.println("截取的长度："+strs.length);
     int num1=Integer.parseInt(strs[1]);
@@ -168,19 +174,33 @@ public String cal(String message) {
       Set<String> set2 = jedis.smembers("!"+sessionid);
       Iterator<String> it2=set2.iterator() ;
 
-
+        int a2=0;
+        int a1=0;
       while(it2.hasNext()){
           String obj=it2.next();
           jedis.srem("!"+sessionid, obj);
+          a2++;
 
       }
       while(it1.hasNext()){
           String obj1=it1.next();
+          a1++;
           jedis.srem("!"+esessionid, obj1);
 
       }
+      if (isblack){
+          if (a2<a1){
+             message="@5";
+          }
+
+      }else{
+          if (a1<a2){
+              message="@5";
+          }
+      }
       System.out.println("查看sets1集合中的所有元素:"+jedis.smembers("!"+sessionid));
       System.out.println("查看sets2集合中的所有元素:"+jedis.smembers("!"+ esessionid));
+
   }
 
     return message;

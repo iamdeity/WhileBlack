@@ -73,7 +73,7 @@ public class WebSocketTest {
 
 
 
-        int a=0;
+
         boolean isblack=false;
         if(!jedis.smembers("!"+sessionid).isEmpty()){   //判断是否还有未完成的棋局
             Set<String> set = jedis.smembers("!"+sessionid);
@@ -153,9 +153,10 @@ public class WebSocketTest {
             }
 
         }else{
-            if (jedis.get("o")==sessionid){
-
+            if (jedis.get("o").equals(sessionid)){
+                System.out.println("你已在等待序列中。。。。。");
             }else{
+               // System.out.println(jedis.get("o"));
                 System.out.println("配对成功");
                 if (jedis.get(sessionid)==null) {
                     jedis.set(sessionid, jedis.get("o"));

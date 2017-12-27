@@ -33,4 +33,20 @@
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/LoginServlet</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>ForgetServlet</servlet-name>
+        <servlet-class>cn.servlet.ForgetServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ForgetServlet</servlet-name>
+        <url-pattern>/ForgetServlet</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>ForgetsServlet</servlet-name>
+        <servlet-class>cn.servlet.ForgetsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ForgetsServlet</servlet-name>
+        <url-pattern>/ForgetsServlet</url-pattern>
+    </servlet-mapping>
 </web-app>

@@ -81,19 +81,19 @@
 
 <script type="text/javascript">
 
-    window.onload=function(){
-        document.onkeydown=function(){
-            var e=window.event||arguments[0];
-            if(e.keyCode==123){
-                return false;
-            }else if((e.ctrlKey)&&(e.shiftKey)&&(e.keyCode==73)){  //禁止审查元素
-                return false;
-            }
-        };
-        document.oncontextmenu=function(){
-            return false;
-        }
-    }
+//    window.onload=function(){
+//        document.onkeydown=function(){
+//            var e=window.event||arguments[0];
+//            if(e.keyCode==123){
+//                return false;
+//            }else if((e.ctrlKey)&&(e.shiftKey)&&(e.keyCode==73)){  //禁止审查元素
+//                return false;
+//            }
+//        };
+//        document.oncontextmenu=function(){
+//            return false;
+//        }
+//    }
     var a1;
     var b1;
     var a2;
@@ -113,7 +113,7 @@
     var solid = 34;
     //判断当前浏览器是否支持WebSocket
     if ('WebSocket' in window) {
-        websocket = new WebSocket("ws://localhost:8080/websocket");
+        websocket = new WebSocket("ws://192.168.123.222:8080/websocket");
     }
     else {
         alert('当前浏览器 Not support websocket')
@@ -560,7 +560,5 @@
 <!--<hr/>-->
 <!--<div id="message"></div>-->
 </body>
-
-=
 
 </html>
