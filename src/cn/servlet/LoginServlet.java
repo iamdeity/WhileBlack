@@ -41,12 +41,14 @@ public class LoginServlet extends HttpServlet {
 
         User user = new User(email, password);
         // System.out.println(dao.getAllUser(email));
+
+     //  dao.getgrade(dao.getid(email));
         boolean isexit= dao.getAllUser(email);
         if (isexit){  //判断用户名是否存在
             User getpassword = dao.getpassword(email);
             if (getpassword.getPass().equals(password)){
                 request.getSession().setAttribute("oneuser", email);
-                response.sendRedirect("/home.html");
+                response.sendRedirect("/home.jsp");
                 out.print("登陆成功");
             }else{
                 response.sendRedirect("/index.html");

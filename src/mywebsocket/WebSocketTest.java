@@ -1,7 +1,7 @@
 package mywebsocket;
-
 import cn.configure.GetHttpSessionConfigurator;
 import cn.mywin.Win;
+
 import redis.clients.jedis.Jedis;
 
 import javax.servlet.http.HttpSession;
@@ -53,8 +53,9 @@ public class WebSocketTest {
     @OnOpen
     public void onOpen(Session session, EndpointConfig config) {
 
+
         this.session = session;
-        webSocketSet.add(this);     //加入set中
+        webSocketSet.add(this);    //加入set中
         addOnlineCount();           //在线数加1
 
         System.out.println("有新连接加入！当前在线人数为" + getOnlineCount());
@@ -126,24 +127,9 @@ public class WebSocketTest {
                         e.printStackTrace();
                     }
                 }
-
-
-
-            }
-
-
-
-
-
+ }
 
         }
-
-
-
-
-
-
-
 
 
         if (jedis.get("o")==null){  //判断序列中是否有人在等待
@@ -196,6 +182,9 @@ public class WebSocketTest {
      */
     @OnMessage
     public void onMessage(String message, Session session) {
+        if (message.equals("@3")||message.equals("@4")){    //判断是否是非法操作
+               message.equals("@5");
+        }
        String[] httpidarry= jedis.get(session.getId()).split("\\|");
        String httpid=httpidarry[1];
 
@@ -213,27 +202,20 @@ public class WebSocketTest {
         if (message.substring(0,1).equals("#")){
              message=win.undo(message);
         }
-        if (message.equals("@6")){
-            Set<String> set1 = jedis.smembers("!"+ehttpid);
-            Iterator<String> it1=set1.iterator() ;
-            Set<String> set2 = jedis.smembers("!"+httpid);
-            Iterator<String> it2=set2.iterator() ;
-
-
-            while(it2.hasNext()){
-                String obj=it2.next();
-                jedis.srem("!"+httpid, obj);
-
+        if (message.equals("@7")){       //对方长时间不下棋
+            if (jedis.exists("@"+ehttpid)){
+                message="@5";
+            }else{
+                win.score(email,true);
+                win.record();
             }
-            while(it1.hasNext()){
-                String obj1=it1.next();
-                jedis.srem("!"+ehttpid, obj1);
 
-            }
-            jedis.del("#"+httpid);
-            jedis.del("#"+ehttpid);
-            System.out.println("查看sets1集合中的所有元素:"+jedis.smembers("!"+httpid));
-            System.out.println("查看sets2集合中的所有元素:"+jedis.smembers("!"+ ehttpid));
+        }
+        if (message.equals("@6")){    //主动退出
+
+            win.score(email,false);
+            win.record();
+
         }
 
        //System.out.println("截取："+message.substring(0,1));

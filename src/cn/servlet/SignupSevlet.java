@@ -58,6 +58,7 @@ public class SignupSevlet extends HttpServlet {
               response.setHeader("refresh", "3;url=/index.html");
           }else{
               dao.saveUser(user);
+              dao.savegrade();
               response.sendRedirect("/index.html");
           }
 

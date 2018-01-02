@@ -32,8 +32,8 @@
 </head>
 
 <!--<body style="background-image: url('img/woodfloor.jpg') ; text-align: center;">-->
-<body onkeydown="sendmessage()" style="background-color: #f0f0f0 ; text-align: center;">
-
+<body onkeydown="sendmessage()" style="background-color: #f0f0f0 ; text-align: center; ">
+<input type="text" id="txt" style="display: block; float: left; margin-left: 30px; margin-top: 80px;">
 <div id="contain_in" style="">
     <div style="width: 75%;height: 100%; float: left; display: block; text-align: center;background-color: #f0ad4e">
         <canvas id="myCanvas" width="510px;" height="510px" ; onclick="chessClick(event)">
@@ -43,9 +43,9 @@
     </div>
     <div style="width: 25%; height: 100%; display: block; float: left;text-align: center; background-color: #0a628f">
         <p>
-            <a href="../../../Desktop/WhileBlack/web/home.html">
-                <button type="button" class="btn btn-primary btn-lg" style=" margin-top: 100px;">退出</button>
-            </a>
+
+                <button type="button" onclick="restar()" class="btn btn-primary btn-lg" style=" margin-top: 100px;">退出</button>
+
 
         </p>
         <p>
@@ -56,7 +56,7 @@
         </p>
         <p>
 
-                <button type="button" class="btn btn-primary btn-lg"  onclick="restar()" style=" margin-top: 100px;">重新开始</button>
+                <button type="button" class="btn btn-primary btn-lg"   style=" margin-top: 100px;">重新开始</button>
 
 
 
@@ -113,7 +113,7 @@
     var solid = 34;
     //判断当前浏览器是否支持WebSocket
     if ('WebSocket' in window) {
-        websocket = new WebSocket("ws://192.168.123.222:8080/websocket");
+        websocket = new WebSocket("ws://localhost:8080/websocket");
     }
     else {
         alert('当前浏览器 Not support websocket')
@@ -155,6 +155,8 @@
         }
 
         if (fdStart2 == 0) {
+            stopCount();
+            document.getElementById('txt').value="现在是己方回合,时限一分钟";
             getstring = getstring.substr(1);
             isclick = true;
             arr = getstring.split(",");
@@ -256,7 +258,7 @@
     ctn.fillRect(3 * solid - 6, 3 * solid - 6, 12, 12);//参数分别表示 x轴,y轴,宽度,高度
     ctn.fillRect(12 * solid - 6, 3 * solid - 6, 12, 12);
     ctn.fillRect(7 * solid - 6, 7 * solid - 6, 12, 12);
-    ctn.fillRect(3 * solid - 6, 12 * solid - 6, 12, 12);
+    ctn.fillRect(3 * solid -6, 12 * solid - 6, 12, 12);
     ctn.fillRect(12 * solid - 6, 12 * solid - 6, 12, 12);
     ctn.lineWidth = 1;//边框宽度
 
@@ -271,6 +273,7 @@
 
     function chessClick(e) {
         if(isclick){
+
             x = e.offsetX
             y = e.offsetY
             x = Math.round(x / solid);//相对canvas的x坐标
@@ -284,6 +287,9 @@
                 a1=x;
                 b1=y;
                 websocket.send(m);
+
+                stopCount();
+                timedCount();
                 clic(x, y);
             }
 
@@ -548,9 +554,40 @@
        }
    }
 
-    function   restar(){
-        websocket.send("@6");
+    function  restar(){
+
+        if (confirm("退出后当认输处理,是否同意")) {
+            websocket.send("@6");
+            window.location.href="home.jsp";
+
+        }else{
+
+        }
+
+        //window.history.back(-1);
     }
+
+
+var c=60;
+var t;
+function timedCount()
+{
+    if(c==1){
+          alert("对方游戏超时，你赢了");
+          stopCount();
+        websocket.send("@7");
+
+    }
+    document.getElementById('txt').value="对方回合倒计时："+c;
+    c=c-1;
+    t=setTimeout("timedCount()",1000)
+}
+function stopCount()
+{
+    c=60;
+    setTimeout("document.getElementById('txt').value=0",0);
+    clearTimeout(t);
+}
 </script>
 
 

@@ -1,7 +1,11 @@
 package cn.mywin;
 
+import cn.dao.UserDao;
+import cn.myjdbc.JDBCUtil;
+import cn.myuser.User;
 import redis.clients.jedis.Jedis;
 
+import javax.servlet.ServletContext;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -28,10 +32,12 @@ public class Win {
              String[] str=message.split("!");
              message=str[1];
 
+             jedis.set("@"+sessionid,"true");       //增加计时器
+            jedis.expire("@"+sessionid, 58);
+            jedis.sadd("!"+sessionid, message);//把棋子坐标加入redis表中
 
-            jedis.sadd("!"+sessionid, message);
             if (jedis.smembers("!"+esessionid).isEmpty()){
-                jedis.set("#"+sessionid,"true");
+                jedis.set("#"+sessionid,"true");     //判断黑白棋
               //  System.out.println("敌方集合是空的");
             }
 
@@ -158,6 +164,7 @@ public String cal(String message) {
 
       System.out.println("交集："+jedis.sinter("!"+sessionid,"!"+ esessionid).isEmpty());
 
+
           if (isblack) {
 
 
@@ -218,5 +225,66 @@ public String cal(String message) {
         return  "good";
 
     }
+    public void  score(String name,boolean iswin){
+
+        //要连接数据库，先从配置表中获取初始化参数传给JDBSUtil的构造函数
+
+        String url = "jdbc:mysql:///wuziqi";
+        String dbuser = "root";
+        String dbpass = "hzkjzyjsxy";
+        //  System.out.println(url+dbuser+dbpass);
+        JDBCUtil util = new JDBCUtil(url, dbuser, dbpass);  //把数据库链接，用户名密码传给jdbcutil，连接数据库
+
+        //userdao--->util--->数据库
+        //然后将util作为参数传给操作类
+
+        UserDao dao = new UserDao();
+        dao.setUtil(util);
+
+        //将获取的的参数存到uer中，调用操作类中的方法保存
+
+
+         int id=dao.getid(name);
+         int grade= dao.getgrade(id);
+
+         if (iswin){
+             grade=grade+1;
+         }else{
+             grade=grade-1;
+         }
+         if (id==0){
+             return;
+         }
+         dao.setgrade(id,grade);
+
+
+
+
+    }
+public  void record(){
+    Set<String> set1 = jedis.smembers("!"+esessionid);
+    Iterator<String> it1=set1.iterator() ;
+    Set<String> set2 = jedis.smembers("!"+sessionid);
+    Iterator<String> it2=set2.iterator();
+    while(it2.hasNext()){
+        String obj=it2.next();
+        jedis.srem("!"+sessionid, obj);
+    }
+    while(it1.hasNext()){
+        String obj1=it1.next();
+        jedis.srem("!"+esessionid, obj1);
+
+    }
+    if (jedis.exists("#"+sessionid)){
+        jedis.del("#"+sessionid);
+    }
+    if (jedis.exists("#"+esessionid)) {
+        jedis.del("#" + esessionid);
+    }
+    jedis.del(sessionid);
+    jedis.del(esessionid);
+    System.out.println("查看sets1集合中的所有元素:"+jedis.smembers("!"+sessionid));
+    System.out.println("查看sets2集合中的所有元素:"+jedis.smembers("!"+ esessionid));
+}
 
 }
