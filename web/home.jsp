@@ -8,8 +8,8 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@   page   import= "cn.myjsp.*"%>
 <%
-
     Mysqljsp mysqljsp=new Mysqljsp();
+    int num=(int)((Math.random()*9+1)*100000);
 
 %>
 <head>
@@ -147,6 +147,11 @@
             <p>
                 <a href="Three.html"> <button type="button" class="btn btn-primary btn-lg" style="margin-top: 100px">联机模式</button></a>
             </p>
+            <p>
+                <button type="button" class="btn btn-primary btn-lg" style="margin-top: 100px"  onclick="mylink()">生成邀请链接</button>
+            </p>
+            <div id="myid" style="margin-top: 100px; display:none">http://localhost:8080/friend?name=<%=num%>
+            </div>
 
             <!--style="width: 50%; height: +---100%; background: #ffff00; float: left"-->
 
@@ -155,5 +160,12 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+          function mylink() {
+
+              document.getElementById( "myid").style.display= "block"
+
+          }
+</script>
 </body>
 </html>

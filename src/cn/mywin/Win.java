@@ -159,6 +159,7 @@ public String cal(String message) {
     }
 
 
+
   if (hz==5||ve==5||ls==5||rs==5){
 
 
@@ -172,6 +173,7 @@ public String cal(String message) {
           }else{
               message="@4";
           }
+
           if (!jedis.sinter("!"+sessionid,"!"+ esessionid).isEmpty()){
               message="@5";   //非法操作
 
@@ -180,6 +182,18 @@ public String cal(String message) {
       Iterator<String> it1=set1.iterator() ;
       Set<String> set2 = jedis.smembers("!"+sessionid);
       Iterator<String> it2=set2.iterator() ;
+      int cha= set2.size()-set1.size();
+
+      if (isblack) {
+
+          if (cha!=1) {
+              message="@5";
+          }
+      }else{
+             if (cha!=0){
+                 message="@5";
+             }
+      }
 
         int a2=0;
         int a1=0;
@@ -195,16 +209,7 @@ public String cal(String message) {
           jedis.srem("!"+esessionid, obj1);
 
       }
-      if (isblack){
-          if (a2<a1){
-             message="@5";
-          }
 
-      }else{
-          if (a1<a2){
-              message="@5";
-          }
-      }
       System.out.println("查看sets1集合中的所有元素:"+jedis.smembers("!"+sessionid));
       System.out.println("查看sets2集合中的所有元素:"+jedis.smembers("!"+ esessionid));
 
@@ -263,9 +268,11 @@ public String cal(String message) {
     }
 public  void record(){
     Set<String> set1 = jedis.smembers("!"+esessionid);
+
     Iterator<String> it1=set1.iterator() ;
     Set<String> set2 = jedis.smembers("!"+sessionid);
     Iterator<String> it2=set2.iterator();
+
     while(it2.hasNext()){
         String obj=it2.next();
         jedis.srem("!"+sessionid, obj);
@@ -282,7 +289,10 @@ public  void record(){
         jedis.del("#" + esessionid);
     }
     jedis.del(sessionid);
-    jedis.del(esessionid);
+    if (jedis.exists(esessionid)){
+        jedis.del(esessionid);
+    }
+
     System.out.println("查看sets1集合中的所有元素:"+jedis.smembers("!"+sessionid));
     System.out.println("查看sets2集合中的所有元素:"+jedis.smembers("!"+ esessionid));
 }

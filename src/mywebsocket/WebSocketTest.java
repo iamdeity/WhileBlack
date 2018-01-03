@@ -33,6 +33,7 @@ public class WebSocketTest {
     boolean isexit=false;
     int listnumb=0;
     HttpSession httpSession;
+    boolean isblack=false;
     public static synchronized int getOnlineCount() {
         return onlineCount;
     }
@@ -56,103 +57,89 @@ public class WebSocketTest {
 
         this.session = session;
         webSocketSet.add(this);    //加入set中
-        addOnlineCount();           //在线数加1
+        addOnlineCount();           //在线数加1 response.sendRedirect("/forget2.html");
 
         System.out.println("有新连接加入！当前在线人数为" + getOnlineCount());
          httpSession = (HttpSession) config.getUserProperties().get(HttpSession.class.getName());
         //这里上面就是获取到的session对象
 
-        email=""+httpSession.getAttribute("oneuser");
+        if (httpSession.getAttribute("oneuser")==null)
+        {
+           email="123@qq.com";
+        }else{
+            email=""+httpSession.getAttribute("oneuser");
+
+        }
+
         //存储数据到列表中
          String sessionid=httpSession.getId();   //获取到用户的httpsession的ID
         jedis.set("|"+sessionid,session.getId());
         jedis.set(session.getId(),"|"+sessionid);
+        jedis.expire("|"+sessionid, 3600);
+        jedis.expire(session.getId(), 3600);
+
      //   System.out.println("session的ID"+sessionid);
        // System.out.println("www"+jedis.get("o"));
 
 
-
-
-
-
-        boolean isblack=false;
         if(!jedis.smembers("!"+sessionid).isEmpty()){   //判断是否还有未完成的棋局
-            Set<String> set = jedis.smembers("!"+sessionid);
-            Iterator<String> it=set.iterator() ;
-             String ehttpid= jedis.get(sessionid);
-
-            Set<String> set1 = jedis.smembers("!"+ehttpid);
-            Iterator<String> it1=set1.iterator() ;
-
-
-            if (jedis.exists("#"+sessionid)){
-                isblack=true;
-
-            }
-            while(it.hasNext()) {
-
-                String obj = it.next();
-                if(isblack){
-                    try {
-                        sendMessage("b"+obj);
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }else{
-                    try {
-                        sendMessage("w"+obj);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-
-            }
-
-            while(it1.hasNext()) {
-
-                String obj1 = it1.next();
-                if(isblack){
-                    try {
-                        sendMessage("w"+obj1);
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }else{
-                    try {
-                        sendMessage("b"+obj1);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
- }
-
+              openload(sessionid);
         }
 
+        if (httpSession.getAttribute("team")==null){
+            if (!jedis.exists("o")){  //判断序列中是否有人在等待
+                if (jedis.get(sessionid)==null){
+                    System.out.println("空的");
+                    jedis.set("o",sessionid);
+                    jedis.expire("o", 300);
+                }
 
-        if (jedis.get("o")==null){  //判断序列中是否有人在等待
-            if (jedis.get(sessionid)==null){
-                System.out.println("空的");
-                jedis.set("o",sessionid);
-            }
-
-        }else{
-            if (jedis.get("o").equals(sessionid)){
-                System.out.println("你已在等待序列中。。。。。");
             }else{
-               // System.out.println(jedis.get("o"));
-                System.out.println("配对成功");
-                if (jedis.get(sessionid)==null) {
-                    jedis.set(sessionid, jedis.get("o"));
-                    jedis.set(jedis.get("o"), sessionid);
-                    jedis.del("o");
+                if (jedis.get("o").equals(sessionid)){
+                    System.out.println("你已在等待序列中。。。。。");
+                }else{
+                    // System.out.println(jedis.get("o"));
+                    System.out.println("配对成功");
+                    if (jedis.get(sessionid)==null) {
+                        jedis.set(sessionid, jedis.get("o"));
+                        jedis.set(jedis.get("o"), sessionid);
+                        jedis.expire(sessionid, 3600);
+                        jedis.expire(jedis.get("o"), 3600);
+                        jedis.del("o");
+                        onMessage("@8",session);
+                        try {
+                            sendMessage("@8");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
 
+                    }
                 }
-            }
 
+            }
+        } else {
+              String team=""+httpSession.getAttribute("team");
+            if (jedis.exists(team)){
+                jedis.set(sessionid, jedis.get(team));
+                jedis.set(jedis.get(team), sessionid);
+                jedis.expire(sessionid, 3600);
+                jedis.expire(jedis.get(team), 3600);
+                jedis.del(team);
+                System.out.println("邀请队列配对完成");
+                onMessage("@8",session);
+                try {
+                    sendMessage("@8");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }else{
+                jedis.set(team,sessionid);
+                jedis.expire(team,300);
+                System.out.println("邀请队列，一人");
+            }
         }
+
 
 
 
@@ -260,5 +247,59 @@ public class WebSocketTest {
     public void sendMessage(String message) throws IOException {
         this.session.getBasicRemote().sendText(message);
         //this.session.getAsyncRemote().sendText(message);
+    }
+    public void openload(String sessionid){
+        Set<String> set = jedis.smembers("!"+sessionid);
+        Iterator<String> it=set.iterator() ;
+        String ehttpid= jedis.get(sessionid);
+
+        Set<String> set1 = jedis.smembers("!"+ehttpid);
+        Iterator<String> it1=set1.iterator() ;
+
+
+        if (jedis.exists("#"+sessionid)){
+            isblack=true;
+
+        }
+        while(it.hasNext()) {
+
+            String obj = it.next();
+            if(isblack){
+                try {
+                    sendMessage("b"+obj);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }else{
+                try {
+                    sendMessage("w"+obj);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+
+        }
+
+        while(it1.hasNext()) {
+
+            String obj1 = it1.next();
+            if(isblack){
+                try {
+                    sendMessage("w"+obj1);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }else{
+                try {
+                    sendMessage("b"+obj1);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
     }
 }

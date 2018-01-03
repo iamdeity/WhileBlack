@@ -81,19 +81,19 @@
 
 <script type="text/javascript">
 
-//    window.onload=function(){
-//        document.onkeydown=function(){
-//            var e=window.event||arguments[0];
-//            if(e.keyCode==123){
-//                return false;
-//            }else if((e.ctrlKey)&&(e.shiftKey)&&(e.keyCode==73)){  //禁止审查元素
-//                return false;
-//            }
-//        };
-//        document.oncontextmenu=function(){
-//            return false;
-//        }
-//    }
+    window.onload=function(){
+        document.onkeydown=function(){
+            var e=window.event||arguments[0];
+            if(e.keyCode==123){
+                return false;
+            }else if((e.ctrlKey)&&(e.shiftKey)&&(e.keyCode==73)){  //禁止审查元素
+                return false;
+            }
+        };
+        document.oncontextmenu=function(){
+            return false;
+        }
+    }
     var a1;
     var b1;
     var a2;
@@ -114,6 +114,7 @@
     //判断当前浏览器是否支持WebSocket
     if ('WebSocket' in window) {
         websocket = new WebSocket("ws://localhost:8080/websocket");
+        //websocket = new WebSocket("ws://192.168.123.222:8080/websocket");
     }
     else {
         alert('当前浏览器 Not support websocket')
@@ -158,7 +159,7 @@
             stopCount();
             document.getElementById('txt').value="现在是己方回合,时限一分钟";
             getstring = getstring.substr(1);
-            isclick = true;
+
             arr = getstring.split(",");
             a2=arr[0];
             b2=arr[1];
@@ -182,8 +183,6 @@
                 websocket.send("#"+a1 + "," + b1);
                 websocket.send("#"+a2 + "," + b2);
 
-
-
             }
 
             else {
@@ -194,6 +193,10 @@
 
 
         }
+        if (getstring=="@8"){
+            alert("游戏开始")
+            isclick = true;
+        }
         if(getstring=="@1"){
            // alert("对方已同意")
             agreeundo();
@@ -203,11 +206,29 @@
             alert("对方拒绝悔棋")
          }
       if (getstring=="@3"){
-             alert("黑子胜，你败了")
+            // alert("黑子胜，你败了")
+          if (confirm("黑子胜，你败了，是否继续")) {
+              location.reload()
+          }
+
+          else {
+              window.location.href="home.jsp";
+
+          }
+
       }
       if (getstring=="@4"){
-          alert("白子胜，你败了")
+         // alert("白子胜，你败了")
+          if (confirm("白子胜，你败了,是否继续")) {
+              location.reload()
+          }
+
+          else {
+              window.location.href="home.jsp";
+
+          }
       }
+
         // setMessageInnerHTML(event.data);
     }
 

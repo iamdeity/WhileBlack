@@ -49,4 +49,12 @@
         <servlet-name>ForgetsServlet</servlet-name>
         <url-pattern>/ForgetsServlet</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>FriendServlet</servlet-name>
+        <servlet-class>cn.servlet.FriendServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FriendServlet</servlet-name>
+        <url-pattern>/friend</url-pattern>
+    </servlet-mapping>
 </web-app>

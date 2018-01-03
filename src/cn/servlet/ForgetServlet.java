@@ -32,7 +32,6 @@ public class ForgetServlet extends HttpServlet {
         String dbpass = ctx.getInitParameter("dbpass");
         //  System.out.println(url+dbuser+dbpass);
         JDBCUtil util = new JDBCUtil(url, dbuser, dbpass);  //把数据库链接，用户名密码传给jdbcutil，连接数据库
-
         //userdao--->util--->数据库
         //然后将util作为参数传给操作类
 
@@ -65,6 +64,7 @@ public class ForgetServlet extends HttpServlet {
         HttpSession session=request.getSession();
            session.setAttribute("email",email);
            jedis.set("#"+email,""+num);
+           jedis.expire("#"+email,300);
            response.sendRedirect("/forget2.html");
 
 
