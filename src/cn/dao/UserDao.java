@@ -415,6 +415,129 @@ public class UserDao {
 
 
     }
+    public List allemail(){
+        List<String> list=new ArrayList<>();
+
+        Connection conn = null;
+        PreparedStatement stat = null;
+        ResultSet res = null;
+
+        try {
+            String sql = "select username from member ORDER BY id ASC";
+            conn = util.getConnection();
+            stat = conn.prepareStatement(sql);
+
+
+            //把查询到的数据放到结果集中
+            res = stat.executeQuery();//查询
+
+            //如果查询到，就将结果集中的数据保存到用户中
+            while (res.next()){
+                list.add(res.getString(1));
+                //  System.out.println();
+
+//                user.setUsername(res.getString("username"));
+//                user.setPass(res.getString("pass"));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally{
+
+            try {
+                if(conn!=null&!conn.isClosed()){
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return  list;
+
+
+    }
+    public List allid(){
+        List<String> list=new ArrayList<>();
+
+        Connection conn = null;
+        PreparedStatement stat = null;
+        ResultSet res = null;
+
+        try {
+            String sql = "select id from member ORDER BY id ASC";
+            conn = util.getConnection();
+            stat = conn.prepareStatement(sql);
+
+
+            //把查询到的数据放到结果集中
+            res = stat.executeQuery();//查询
+
+            //如果查询到，就将结果集中的数据保存到用户中
+            while (res.next()){
+                list.add(res.getString(1));
+                //  System.out.println();
+
+//                user.setUsername(res.getString("username"));
+//                user.setPass(res.getString("pass"));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally{
+
+            try {
+                if(conn!=null&!conn.isClosed()){
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return  list;
+
+
+    }
+    public List allgrade(){
+        List<String> list=new ArrayList<>();
+
+        Connection conn = null;
+        PreparedStatement stat = null;
+        ResultSet res = null;
+
+        try {
+            String sql = "select grade from score ORDER BY id ASC";
+            conn = util.getConnection();
+            stat = conn.prepareStatement(sql);
+
+
+            //把查询到的数据放到结果集中
+            res = stat.executeQuery();//查询
+
+            //如果查询到，就将结果集中的数据保存到用户中
+            while (res.next()){
+                list.add(res.getString(1));
+                //  System.out.println();
+
+//                user.setUsername(res.getString("username"));
+//                user.setPass(res.getString("pass"));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally{
+
+            try {
+                if(conn!=null&!conn.isClosed()){
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return  list;
+
+
+    }
     public String descemail(String id){  //
         String email = null;
 
@@ -449,5 +572,71 @@ public class UserDao {
         }
 
         return email;
+    }
+    public void delscore(String id){  //
+
+        String email = null;
+
+        Connection conn = null;
+        PreparedStatement stat = null;
+        ResultSet res = null;
+
+        try {
+            String sql = "delete from score where id=?";
+            conn = util.getConnection();
+           // conn.createStatement();
+            stat = conn.prepareStatement(sql);
+            stat.setString(1, ""+id);
+
+            //把查询到的数据放到结果集中
+            stat.executeUpdate();
+            System.out.println("执行了");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally{
+
+            try {
+                if(conn!=null&!conn.isClosed()){
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+    public void delmember(String id){  //
+
+       // System.out.println("执行了");
+        Connection conn = null;
+        PreparedStatement stat = null;
+        ResultSet res = null;
+
+        try {
+            String sql = "delete from member where id=?";
+            conn = util.getConnection();
+
+            stat = conn.prepareStatement(sql);
+            stat.setString(1, ""+id);
+
+            //把查询到的数据放到结果集中
+            stat.executeUpdate();
+            System.out.println("执行了");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally{
+
+            try {
+                if(conn!=null&!conn.isClosed()){
+                    conn.close();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+
     }
 }

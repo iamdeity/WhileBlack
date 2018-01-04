@@ -11,6 +11,7 @@
     Mysqljsp mysqljsp=new Mysqljsp();
     int num=(int)((Math.random()*9+1)*100000);
 
+
 %>
 <head>
     <meta charset="UTF-8">
